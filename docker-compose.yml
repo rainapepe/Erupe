@@ -2,18 +2,18 @@ version: "3.9"
 
 services:
     
-  # db:
-  #   image: postgres:13.1-alpine
-  #   volumes:
-  #     - erupe-db-data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=password
-  #     - POSTGRES_DB=erupe
-  #   ports: 
-  #     - "5432:5432"
-  #   networks: 
-  #     - backend
+  db:
+    image: postgres:13.1-alpine
+    volumes:
+      - erupe-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=erupe
+    ports: 
+      - "5432:5432"
+    networks: 
+      - backend
 
   # adminer:
   #   image: adminer

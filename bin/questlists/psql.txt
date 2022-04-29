@@ -12,5 +12,3 @@ INSERT INTO questlists (ind, questlist) VALUES ('42', pg_read_binary_file('c:\sa
 INSERT INTO questlists (ind, questlist) VALUES ('84', pg_read_binary_file('c:\save\quest_84_54.bin'));
 INSERT INTO questlists (ind, questlist) VALUES ('126', pg_read_binary_file('c:\save\quest_126_7E.bin'));
 INSERT INTO questlists (ind, questlist) VALUES ('168', pg_read_binary_file('c:\save\quest_168_A8.bin'));
-
-
