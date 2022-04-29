@@ -2,6 +2,19 @@ version: "3.9"
 
 services:
     
+  # db:
+  #   image: postgres:13.1-alpine
+  #   volumes:
+  #     - erupe-db-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=erupe
+  #   ports: 
+  #     - "5432:5432"
+  #   networks: 
+  #     - backend
+
   # adminer:
   #   image: adminer
   #   restart: always
@@ -37,22 +50,5 @@ volumes:
       type: none
       o: bind
       device: .
-  erupe-server-www:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./www
-  erupe-server-savedata:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./savedata
-  erupe-server-bin:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./bin
+  erupe-db-data:
   

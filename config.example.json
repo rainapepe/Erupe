@@ -13,6 +13,7 @@
 			"Enabled": true,
 			"OutputDir": "savedata"
 		}
+		
     },
     "discord": {
         "enabled": false,

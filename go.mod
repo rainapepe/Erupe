@@ -28,12 +28,10 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.2.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.15.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/go-github/v35 v35.3.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -50,7 +48,6 @@ require (
 	github.com/nakagami/firebirdsql v0.9.3 // indirect
 	github.com/neo4j/neo4j-go-driver v1.8.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.12 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sachaos/lottery v0.0.0-20180520074626-61949d99bd96
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/snowflakedb/gosnowflake v1.6.4 // indirect
