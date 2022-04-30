@@ -42,7 +42,9 @@ function soundPreLogin() {
 }
 
 function soundLogin() {
-	window.external.playSound('IDR_WAV_LOGIN');
+	// window.external.playSound('IDR_WAV_LOGIN');
+  var music = new Audio('./audio/sys_starting.mp3');
+  music.play();
 }
 
 function soundNiku() {

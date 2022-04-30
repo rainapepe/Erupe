@@ -5,12 +5,25 @@ import (
 	"os"
 	"strings"
 	"time"
-
+	"regexp"
 	"github.com/bwmarrin/discordgo"
 )
 
+func CountChars(s *Server) string {
+	count := 0
+	for _, stage := range s.stages {
+		count += len(stage.clients)
+	}
+
+	message := fmt.Sprintf("Server [%s]: %d players;", s.name,  count);
+
+	return message
+}
+
+
 // onDiscordMessage handles receiving messages from discord and forwarding them ingame.
 func (s *Server) onDiscordMessage(ds *discordgo.Session, m *discordgo.MessageCreate) {
+
 	// Ignore messages from our bot, or ones that are not in the correct channel.
 	if m.Author.ID == ds.State.User.ID || m.ChannelID != s.erupeConfig.Discord.ChannelID {
 		return
@@ -66,11 +79,77 @@ func (s *Server) onDiscordMessage(ds *discordgo.Session, m *discordgo.MessageCre
 		s.BroadcastChatMessage("Bonne chasse !")
 		s.TimerUpdate(0, 1, false)
 		return
+	} else if result[0] == "!status" {
+		ds.ChannelMessageSend(m.ChannelID, CountChars(s));
+		return
 	}
 
-	message := fmt.Sprintf("[DISCORD] %s: %s", m.Author.Username, m.Content)
+
+	message := fmt.Sprintf("[DISCORD] %s: %s", m.Author.Username, NormalizeDiscordMessage(ds, m))
 	s.BroadcastChatMessage(message)
 }
+
+func NormalizeDiscordMessage(ds *discordgo.Session,   m *discordgo.MessageCreate) string {
+	userRegex := regexp.MustCompile(`<@!?(\d{17,19})>`)
+	emojiRegex := regexp.MustCompile(`(?:<a?)?:(\w+):(?:\d{18}>)?`)
+	roleRegex := regexp.MustCompile(`<@&(\d{17,19})>`)
+	
+	result := ReplaceText(m.Content, userRegex, func (userId string) string {
+		user, err := ds.User(userId)
+	
+		if (err != nil) {
+			return "@NoUserError" // @Unknown
+		}
+
+		return "@" + user.Username
+	})
+
+
+	result = ReplaceText(result, emojiRegex, func (emojiName string) string {
+		return ":" + emojiName + ":"
+	})
+
+
+	result = ReplaceText(result, roleRegex, func (roleId string) string {
+		guild, err := ds.Guild(m.Message.GuildID)
+		
+		if err != nil {
+			return "@!NoGuildError"
+		}
+
+		role := FindRoleByID(guild.Roles, roleId)
+	
+		if (role != nil) {
+			return  "@!" + role.Name
+		}
+
+		return "@!NoRoleError"
+	 })
+
+	return string(result)
+}
+
+func FindRoleByID(roles []*discordgo.Role, id string) *discordgo.Role {
+	for _, role := range roles {
+		if (role.ID == id) {
+			return role
+		}
+	}
+
+	return nil
+}
+
+func ReplaceText(text string, regex *regexp.Regexp,  handler func(input string) string) string {
+	result := regex.ReplaceAllFunc([]byte(text), func (s []byte) []byte {
+		input := regex.ReplaceAllString(string(s), `$1`)
+
+		return []byte(handler(input))
+	})
+
+	return string(result)
+} 
+
+
 
 func dayConvert(result string) string {
 	var replaceDays string

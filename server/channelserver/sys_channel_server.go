@@ -19,6 +19,7 @@ type Config struct {
 	Logger      *zap.Logger
 	DB          *sqlx.DB
 	ErupeConfig *config.Config
+	Name		string
 }
 
 // Map key type for a user binary part.
@@ -37,22 +38,22 @@ type Server struct {
 	deleteConns chan net.Conn
 	sessions    map[net.Conn]*Session
 	listener    net.Listener // Listener that is created when Server.Start is called.
-
 	isShuttingDown bool
-
+	
 	stagesLock sync.RWMutex
 	stages     map[string]*Stage
-
+	
 	// UserBinary
 	userBinaryPartsLock sync.RWMutex
 	userBinaryParts     map[userBinaryPartID][]byte
-
+	
 	// Semaphore
 	semaphoreLock sync.RWMutex
 	semaphore     map[string]*Semaphore
-
+	
 	// Discord chat integration
 	discordSession *discordgo.Session
+	name 		string
 }
 
 // NewServer creates a new Server type.
@@ -68,6 +69,7 @@ func NewServer(config *Config) *Server {
 		userBinaryParts: make(map[userBinaryPartID][]byte),
 		semaphore:       make(map[string]*Semaphore),
 		discordSession:  nil,
+		name:  			 config.Name,
 	}
 
 	// Mezeporta
@@ -229,7 +231,7 @@ func (s *Server) BroadcastChatMessage(message string) {
 	bf.SetLE()
 	msgBinChat := &binpacket.MsgBinChat{
 		Unk0:       0,
-		Type:       5,
+		Type:       2,
 		Flags:      0x80,
 		Message:    message,
 		SenderName: "Erupe",

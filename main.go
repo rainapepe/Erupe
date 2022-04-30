@@ -116,6 +116,7 @@ func main() {
 			Logger:      logger.Named("channel"),
 			ErupeConfig: erupeConfig,
 			DB:          db,
+			Name:		 erupeConfig.Entrance.Entries[0].Name,
 		})
 
 	err = channelServer1.Start(erupeConfig.Channel.Port1)
@@ -129,6 +130,7 @@ func main() {
 			Logger:      logger.Named("channel"),
 			ErupeConfig: erupeConfig,
 			DB:          db,
+			Name:		 erupeConfig.Entrance.Entries[1].Name,
 		})
 
 	err = channelServer2.Start(erupeConfig.Channel.Port2)
@@ -141,6 +143,7 @@ func main() {
 			Logger:      logger.Named("channel"),
 			ErupeConfig: erupeConfig,
 			DB:          db,
+			Name:		 erupeConfig.Entrance.Entries[2].Name,
 		})
 
 	err = channelServer3.Start(erupeConfig.Channel.Port3)
@@ -153,6 +156,7 @@ func main() {
 			Logger:      logger.Named("channel"),
 			ErupeConfig: erupeConfig,
 			DB:          db,
+			Name:		 erupeConfig.Entrance.Entries[3].Name,
 		})
 
 	err = channelServer4.Start(erupeConfig.Channel.Port4)
