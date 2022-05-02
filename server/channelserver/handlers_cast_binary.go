@@ -3,7 +3,6 @@ package channelserver
 import (
 	"fmt"
 	"math"
-	"strings"
 
 	"github.com/Andoryuuta/byteframe"
 	"github.com/Solenataris/Erupe/network/binpacket"
@@ -47,19 +46,20 @@ func sendServerChatMessage(s *Session, message string) {
 	s.QueueSendMHF(castedBin)
 }
 
+// TODO: Emit all packets in human events, example: new text messages should be received in OnChatMessage function
 func handleMsgSysCastBinary(s *Session, p mhfpacket.MHFPacket) {
 	pkt := p.(*mhfpacket.MsgSysCastBinary)
 
 	if pkt.BroadcastType == 0x03 && pkt.MessageType == 0x03 && len(pkt.RawDataPayload) == 0x10 {
-        tmp := byteframe.NewByteFrameFromBytes(pkt.RawDataPayload)
+		tmp := byteframe.NewByteFrameFromBytes(pkt.RawDataPayload)
 
-        if tmp.ReadUint16() == 0x0002 && tmp.ReadUint8() == 0x18 {
-            _ = tmp.ReadBytes(9)
-            tmp.SetLE()
-            frame := tmp.ReadUint32()
-            sendServerChatMessage(s, fmt.Sprintf("TIME : %d'%d.%03d (%dframe)", frame/30/60, frame/30%60, int(math.Round(float64(frame%30*100)/3)), frame))
-        }
-    }
+		if tmp.ReadUint16() == 0x0002 && tmp.ReadUint8() == 0x18 {
+			_ = tmp.ReadBytes(9)
+			tmp.SetLE()
+			frame := tmp.ReadUint32()
+			sendServerChatMessage(s, fmt.Sprintf("TIME : %d'%d.%03d (%dframe)", frame/30/60, frame/30%60, int(math.Round(float64(frame%30*100)/3)), frame))
+		}
+	}
 
 	// Parse out the real casted binary payload
 	var realPayload []byte
@@ -125,33 +125,33 @@ func handleMsgSysCastBinary(s *Session, p mhfpacket.MHFPacket) {
 
 		// Discord integration
 		if s.server.erupeConfig.Discord.Enabled {
-			message := fmt.Sprintf("%s: %s", chatMessage.SenderName, chatMessage.Message)
-			s.server.discordSession.ChannelMessageSend(s.server.erupeConfig.Discord.ChannelID, message)
+			s.server.DiscordChannelSend(chatMessage.SenderName, chatMessage.Message)
 		}
 
-		if strings.HasPrefix(chatMessage.Message, "!tele ") {
-			var x, y int16
-			n, err := fmt.Sscanf(chatMessage.Message, "!tele %d %d", &x, &y)
-			if err != nil || n != 2 {
-				sendServerChatMessage(s, "Invalid command. Usage:\"!tele 500 500\"")
-			} else {
-				sendServerChatMessage(s, fmt.Sprintf("Teleporting to %d %d", x, y))
+		// WARNING: Not delete this code, its have a lot of usefull player information
+		// if strings.HasPrefix(chatMessage.Message, "!tele ") {
+		// 	var x, y int16
+		// 	n, err := fmt.Sscanf(chatMessage.Message, "!tele %d %d", &x, &y)
+		// 	if err != nil || n != 2 {
+		// 		sendServerChatMessage(s, "Invalid command. Usage:\"!tele 500 500\"")
+		// 	} else {
+		// 		sendServerChatMessage(s, fmt.Sprintf("Teleporting to %d %d", x, y))
 
-				// Make the inside of the casted binary
-				payload := byteframe.NewByteFrame()
-				payload.SetLE()
-				payload.WriteUint8(2) // SetState type(position == 2)
-				payload.WriteInt16(x) // X
-				payload.WriteInt16(y) // Y
-				payloadBytes := payload.Data()
+		// 		// Make the inside of the casted binary
+		// 		payload := byteframe.NewByteFrame()
+		// 		payload.SetLE()
+		// 		payload.WriteUint8(2) // SetState type(position == 2)
+		// 		payload.WriteInt16(x) // X
+		// 		payload.WriteInt16(y) // Y
+		// 		payloadBytes := payload.Data()
 
-				s.QueueSendMHF(&mhfpacket.MsgSysCastedBinary{
-					CharID:         s.charID,
-					MessageType:    BinaryMessageTypeState,
-					RawDataPayload: payloadBytes,
-				})
-			}
-		}
+		// 		s.QueueSendMHF(&mhfpacket.MsgSysCastedBinary{
+		// 			CharID:         s.charID,
+		// 			MessageType:    BinaryMessageTypeState,
+		// 			RawDataPayload: payloadBytes,
+		// 		})
+		// 	}
+		// }
 	}
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/Solenataris/Erupe/config"
 	"github.com/Solenataris/Erupe/network/binpacket"
 	"github.com/Solenataris/Erupe/network/mhfpacket"
-	"github.com/bwmarrin/discordgo"
+	"github.com/Solenataris/Erupe/server/discord"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -18,8 +18,9 @@ import (
 type Config struct {
 	Logger      *zap.Logger
 	DB          *sqlx.DB
+	DiscordBot  *discord.DiscordBot
 	ErupeConfig *config.Config
-	Name		string
+	Name        string
 }
 
 // Map key type for a user binary part.
@@ -31,29 +32,30 @@ type userBinaryPartID struct {
 // Server is a MHF channel server.
 type Server struct {
 	sync.Mutex
-	logger      *zap.Logger
-	db          *sqlx.DB
-	erupeConfig *config.Config
-	acceptConns chan net.Conn
-	deleteConns chan net.Conn
-	sessions    map[net.Conn]*Session
-	listener    net.Listener // Listener that is created when Server.Start is called.
+	logger         *zap.Logger
+	db             *sqlx.DB
+	erupeConfig    *config.Config
+	acceptConns    chan net.Conn
+	deleteConns    chan net.Conn
+	sessions       map[net.Conn]*Session
+	listener       net.Listener // Listener that is created when Server.Start is called.
 	isShuttingDown bool
-	
+
 	stagesLock sync.RWMutex
 	stages     map[string]*Stage
-	
+
 	// UserBinary
 	userBinaryPartsLock sync.RWMutex
 	userBinaryParts     map[userBinaryPartID][]byte
-	
+
 	// Semaphore
 	semaphoreLock sync.RWMutex
 	semaphore     map[string]*Semaphore
-	
+
 	// Discord chat integration
-	discordSession *discordgo.Session
-	name 		string
+	discordBot *discord.DiscordBot
+
+	name string
 }
 
 // NewServer creates a new Server type.
@@ -68,8 +70,8 @@ func NewServer(config *Config) *Server {
 		stages:          make(map[string]*Stage),
 		userBinaryParts: make(map[userBinaryPartID][]byte),
 		semaphore:       make(map[string]*Semaphore),
-		discordSession:  nil,
-		name:  			 config.Name,
+		discordBot:      config.DiscordBot,
+		name:            config.Name,
 	}
 
 	// Mezeporta
@@ -105,16 +107,6 @@ func NewServer(config *Config) *Server {
 	// MezFes
 	s.stages["sl1Ns462p0a0u0"] = NewStage("sl1Ns462p0a0u0")
 
-	// Create the discord session, (not actually connecting to discord servers yet).
-	if s.erupeConfig.Discord.Enabled {
-		ds, err := discordgo.New("Bot " + s.erupeConfig.Discord.BotToken)
-		if err != nil {
-			s.logger.Fatal("Error creating Discord session.", zap.Error(err))
-		}
-		ds.AddHandler(s.onDiscordMessage)
-		s.discordSession = ds
-	}
-
 	return s
 }
 
@@ -129,14 +121,7 @@ func (s *Server) Start(port int) error {
 	go s.acceptClients()
 	go s.manageSessions()
 
-	// Start the discord bot for chat integration.
-	if s.erupeConfig.Discord.Enabled {
-		err = s.discordSession.Open()
-		if err != nil {
-			s.logger.Warn("Error opening Discord session.", zap.Error(err))
-			return err
-		}
-	}
+	s.discordBot.Session.AddHandler(s.onDiscordMessage)
 
 	return nil
 }
@@ -148,11 +133,8 @@ func (s *Server) Shutdown() {
 	s.Unlock()
 
 	s.listener.Close()
-	close(s.acceptConns)
 
-	if s.erupeConfig.Discord.Enabled {
-		s.discordSession.Close()
-	}
+	close(s.acceptConns)
 }
 
 func (s *Server) acceptClients() {
@@ -231,10 +213,10 @@ func (s *Server) BroadcastChatMessage(message string) {
 	bf.SetLE()
 	msgBinChat := &binpacket.MsgBinChat{
 		Unk0:       0,
-		Type:       2,
+		Type:       5,
 		Flags:      0x80,
 		Message:    message,
-		SenderName: "Erupe",
+		SenderName: s.name,
 	}
 	msgBinChat.Build(bf)
 
@@ -243,6 +225,11 @@ func (s *Server) BroadcastChatMessage(message string) {
 		MessageType:    BinaryMessageTypeChat,
 		RawDataPayload: bf.Data(),
 	}, nil)
+}
+
+func (s *Server) DiscordChannelSend(charName string, content string) {
+	message := fmt.Sprintf("%s: %s", charName, content)
+	s.discordBot.RealtimeChannelSend(message)
 }
 
 func (s *Server) FindSessionByCharID(charID uint32) *Session {
