@@ -42,20 +42,26 @@ func main() {
 	}
 
 	// Discord bot
-	discordBot, err := discord.NewDiscordBot(discord.DiscordBotOptions{
-		Logger: logger,
-		Config: erupeConfig,
-	})
+	var discordBot *discord.DiscordBot = nil
+	
+	if erupeConfig.Discord.Enabled {
+		bot, err := discord.NewDiscordBot(discord.DiscordBotOptions{
+			Logger: logger,
+			Config: erupeConfig,
+		})
 
-	if err != nil {
-		logger.Fatal("Failed to create discord bot", zap.Error(err))
-	}
+		if err != nil {
+			logger.Fatal("Failed to create discord bot", zap.Error(err))
+		}
 
-	// Discord bot
-	err = discordBot.Start()
+		// Discord bot
+		err = bot.Start()
 
-	if err != nil {
-		logger.Fatal("Failed to starts discord bot", zap.Error(err))
+		if err != nil {
+			logger.Fatal("Failed to starts discord bot", zap.Error(err))
+		}
+
+		discordBot = bot
 	}
 
 	// Create the postgres DB pool.

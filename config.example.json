@@ -18,7 +18,8 @@
     "discord": {
         "enabled": false,
         "bottoken": "",
-        "realtimeChatChannelID": ""
+        "realtimeChannelID": "",
+        "serverId": ""
     },
     "database": {
         "host": "localhost",

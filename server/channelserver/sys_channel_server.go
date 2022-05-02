@@ -121,7 +121,9 @@ func (s *Server) Start(port int) error {
 	go s.acceptClients()
 	go s.manageSessions()
 
-	s.discordBot.Session.AddHandler(s.onDiscordMessage)
+	if s.erupeConfig.Discord.Enabled {
+		s.discordBot.Session.AddHandler(s.onDiscordMessage)
+	}
 
 	return nil
 }
@@ -228,8 +230,10 @@ func (s *Server) BroadcastChatMessage(message string) {
 }
 
 func (s *Server) DiscordChannelSend(charName string, content string) {
-	message := fmt.Sprintf("%s: %s", charName, content)
-	s.discordBot.RealtimeChannelSend(message)
+	if s.erupeConfig.Discord.Enabled {
+		message := fmt.Sprintf("%s: %s", charName, content)
+		s.discordBot.RealtimeChannelSend(message)
+	}
 }
 
 func (s *Server) FindSessionByCharID(charID uint32) *Session {
