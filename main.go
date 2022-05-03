@@ -43,7 +43,7 @@ func main() {
 
 	// Discord bot
 	var discordBot *discord.DiscordBot = nil
-	
+
 	if erupeConfig.Discord.Enabled {
 		bot, err := discord.NewDiscordBot(discord.DiscordBotOptions{
 			Logger: logger,
@@ -144,6 +144,7 @@ func main() {
 			ErupeConfig: erupeConfig,
 			DB:          db,
 			Name:        erupeConfig.Entrance.Entries[0].Name,
+			Enable:      erupeConfig.Entrance.Entries[0].Channels[0].MaxPlayers > 0,
 			DiscordBot:  discordBot,
 		})
 
@@ -159,6 +160,7 @@ func main() {
 			ErupeConfig: erupeConfig,
 			DB:          db,
 			Name:        erupeConfig.Entrance.Entries[1].Name,
+			Enable:      erupeConfig.Entrance.Entries[1].Channels[0].MaxPlayers > 0,
 			DiscordBot:  discordBot,
 		})
 
@@ -173,6 +175,7 @@ func main() {
 			ErupeConfig: erupeConfig,
 			DB:          db,
 			Name:        erupeConfig.Entrance.Entries[2].Name,
+			Enable:      erupeConfig.Entrance.Entries[2].Channels[0].MaxPlayers > 0,
 			DiscordBot:  discordBot,
 		})
 
@@ -187,6 +190,7 @@ func main() {
 			ErupeConfig: erupeConfig,
 			DB:          db,
 			Name:        erupeConfig.Entrance.Entries[3].Name,
+			Enable:      erupeConfig.Entrance.Entries[3].Channels[0].MaxPlayers > 0,
 			DiscordBot:  discordBot,
 		})
 

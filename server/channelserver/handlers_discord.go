@@ -18,6 +18,22 @@ func CountChars(s *Server) string {
 	return message
 }
 
+func PlayerList(s *Server) string {
+	list := ""
+	count := 0
+	for _, stage := range s.stages {
+		for client := range stage.clients {
+			list = list + "- " + client.Name + "\n"
+			count += 1
+		}
+	}
+
+	message := fmt.Sprintf("List of players: Server [%s]\n ######### Total %d ######### \n", s.name, count)
+	message += list
+
+	return message
+}
+
 // onDiscordMessage handles receiving messages from discord and forwarding them in game.
 func (s *Server) onDiscordMessage(ds *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -30,8 +46,14 @@ func (s *Server) onDiscordMessage(ds *discordgo.Session, m *discordgo.MessageCre
 	args := strings.Split(m.Content, " ")
 	commandName := args[0]
 
-	if commandName == "!status" {
+	if commandName == "!status" && s.enable {
 		ds.ChannelMessageSend(m.ChannelID, CountChars(s))
+		return
+	}
+
+	if commandName == "!players" && s.enable {
+		ds.ChannelMessageSend(m.ChannelID, PlayerList(s))
+		return
 	}
 
 	if m.ChannelID == s.erupeConfig.Discord.RealtimeChannelID {
