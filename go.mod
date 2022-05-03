@@ -48,6 +48,7 @@ require (
 	github.com/nakagami/firebirdsql v0.9.3 // indirect
 	github.com/neo4j/neo4j-go-driver v1.8.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.12 // indirect
+	github.com/prisma/prisma-client-go v0.15.0 // indirect
 	github.com/sachaos/lottery v0.0.0-20180520074626-61949d99bd96
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/snowflakedb/gosnowflake v1.6.4 // indirect
