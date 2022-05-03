@@ -12,36 +12,12 @@ services:
       - POSTGRES_DB=erupe
     ports: 
       - "5432:5432"
-    networks: 
-      - backend
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8080
-  #   networks: 
-  #     - backend
-  
-  server:
-    image: erupe_server:1.0.1
-    volumes:
-      - erupe-server:/app/erupe
+  adminer:
+    image: adminer
+    restart: always
     ports:
-      - "80:80"
-      - "53312:53312"
-      - "54001:54001"
-      - "54002:54002"
-      - "54003:54003"
-      - "54004:54004"
-      - "53310:53310"
-    networks: 
-      - backend
-
-
-networks:
-  backend:
-
+      - 8080:8080
 
 volumes:
   erupe-server:
