@@ -6,26 +6,6 @@ var selectedUid;
 var firstChar;
 var modalState = false;
 
-function CUE_Cursor(){
-  var music = new Audio('./audio/sys_cursor.mp3');
-  music.play();
-}
-
-function CUE_Selected(){
-  var music = new Audio('./audio/sys_select.mp3');
-  music.play();
-}
-
-function CUE_Confirm(){
-  var music = new Audio('./audio/sys_confirm.mp3');
-  music.play();
-}
-
-function CUE_Starting(){
-  var music = new Audio('./audio/sys_starting.mp3');
-  music.play();
-}
-
 
 function soundSel() {
 	// window.external.playSound('IDR_WAV_SEL');
@@ -132,7 +112,7 @@ function createCharItem(name, uid, weapon, hr, gr, date, sex) {
       icon = 'img/icons/ss.png';
       break;
     case '双剣':
-      weapon = 'Dual Blades';
+      weapon = 'Dual Swords';
       icon = 'img/icons/db.png';
       break;
     case '大剣':
@@ -140,7 +120,7 @@ function createCharItem(name, uid, weapon, hr, gr, date, sex) {
       icon = 'img/icons/gs.png';
       break;
     case '太刀':
-      weapon = 'Long Sword';
+      weapon = 'Longsword';
       icon = 'img/icons/ls.png';
       break;
     case 'ハンマー':
@@ -163,7 +143,7 @@ function createCharItem(name, uid, weapon, hr, gr, date, sex) {
       weapon = 'Tonfa';
       icon = 'img/icons/tf.png';
       break;
-    case 'スラッシュアックスF':
+    case 'スラッシュアックスＦ':
       weapon = 'Switch Axe F';
       icon = 'img/icons/sa.png';
       break;
@@ -296,7 +276,7 @@ function doLogin(option) {
         addLog('Creating new character...', 'normal');
         window.external.loginCog(username+'+', password, password);
       } else {
-        window.external.loginCog(username, password, password);
+        window.external.loginCog(username, password, 'test');
 	  }
     } catch (e) {
       addLog('Error on loginCog: '+e, 'error');

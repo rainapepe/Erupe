@@ -8,19 +8,15 @@ import (
 )
 
 type Character struct {
-	ID              uint32 `db:"id"`
-	IsFemale        bool   `db:"is_female"`
-	IsNewCharacter  bool   `db:"is_new_character"`
-	SmallGRLevel    uint8  `db:"small_gr_level"`
-	GROverrideMode  bool   `db:"gr_override_mode"`
-	Name            string `db:"name"`
-	UnkDescString   string `db:"unk_desc_string"`
-	GROverrideLevel uint16 `db:"gr_override_level"`
-	GROverrideUnk0  uint8  `db:"gr_override_unk0"`
-	GROverrideUnk1  uint8  `db:"gr_override_unk1"`
-	Exp             uint16 `db:"exp"`
-	Weapon          uint16 `db:"weapon"`
-	LastLogin       uint32 `db:"last_login"`
+	ID             uint32 `db:"id"`
+	IsFemale       bool   `db:"is_female"`
+	IsNewCharacter bool   `db:"is_new_character"`
+	Name           string `db:"name"`
+	UnkDescString  string `db:"unk_desc_string"`
+	HRP            uint16 `db:"hrp"`
+	GR             uint16 `db:"gr"`
+	WeaponType     uint16 `db:"weapon_type"`
+	LastLogin      uint32 `db:"last_login"`
 }
 
 var weapons = []string{
@@ -42,7 +38,7 @@ var weapons = []string{
 
 func (s *Server) getCharacterForUser(uid int) (*Character, error) {
 	character := Character{}
-	err := s.db.Get(&character, "SELECT id, is_female, is_new_character, small_gr_level, gr_override_mode, name, unk_desc_string, gr_override_level, gr_override_unk0, gr_override_unk1, exp, weapon, last_login FROM characters WHERE id = $1", uid)
+	err := s.db.Get(&character, "SELECT id, is_female, is_new_character, name, unk_desc_string, hrp, gr, weapon_type, last_login  FROM characters WHERE id = $1", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +70,7 @@ func PlayerList(s *Server) string {
 			}
 
 			if err == nil {
-				list = list + weapons[char.Weapon] + " " + char.Name + " " + status + "\n"
+				list = list + weapons[char.WeaponType] + " " + char.Name + " " + status + "\n"
 				count += 1
 			}
 		}
