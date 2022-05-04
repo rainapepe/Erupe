@@ -1,0 +1,24 @@
+Yes, this is it. The big moment is here.
+Let's just get straight to it.
+
+Before anything: get the New Launcher and follow the guide on how to install it.
+
+1) Drag and drop the "network", "server", and "www" folders into Erupe.
+If it asks you to overwrite stuff, you're doing the right thing.
+2) Clear your INetCache again in "Internet Properties"
+3) Open pgadmin4.
+4) Rightclick Erupe and open the Query Tool.
+5) Drag and drop "SCHEMA.sql" file into the Query Tool field.
+6) Press F5
+If it gives you "Query returned successfully" then you did it right.
+7) Run the server, and enjoy the big snake.
+
+Want to change the subscription?
+1) Go back into pgadmin4.
+2) Find the users table, and right-click it.
+3) View/Edit Data -> All Rows
+4) In the new "rights" collumn, you can now set it per user.
+[You must only set numbers!]
+14 = Hunter Life and EX Course
+846 = Hunter Life, EX Course, Premium Course, Assist Course, and N Course
+8014 = 846, but also Hunter AidCourse (1.25x damage boost and 70% damage reduction) and N-Boost Course.
